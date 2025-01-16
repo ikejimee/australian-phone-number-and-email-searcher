@@ -1,8 +1,8 @@
 #! python3
 #phoneAndEmail.py - finds phone numbers and email addresses on the clipboard
 
-import re
 import pyperclip
+import re
 from typing import List
 
 
@@ -28,10 +28,19 @@ EMAIL_REGEX = re.compile(r'''(
  
 
 def matchPattern(text: str) -> List[str]:
-    matches = []
+    """
+    Matches patterns found in the text for Australian phone numbers and emails and returns a list of these matched items
+
+    Args:
+        text (str): The block of text being searched for emails and phone numbers
+
+    Returns:
+        List[str]: A list of matched phone numbers and emails in the block of text
+    """
+    matches: List[str] = []
     for groups in PHONE_NUMBER_REGEX.findall(text): # Ensure the groups are not empty (only allow full patterns formed)
         if groups[1:] is not None:
-            phone_number = ''.join([groups[1],groups[3],groups[5], groups[7]])
+            phone_number: str = ''.join([groups[1],groups[3],groups[5], groups[7]])
             matches.append(phone_number)
     for email_match in EMAIL_REGEX.findall(text):
         matches.append(email_match)
@@ -39,15 +48,25 @@ def matchPattern(text: str) -> List[str]:
         
 
 def copyToClipboard(matches: List[str]) -> None:
+    """
+    Copies all the matched phone numbers and emails to the clipboard and displays them
+
+    Args:
+        matches (List[str]): A list of matched phone numbers and emails in the block of text
+    """
     if len(matches)>0:
         pyperclip.copy('\n'.join(matches))
         print('The following has been copied to clipboard:')
-        print('\n'.join(matches))
+        res: str = '\n'.join(matches)
+        print(res)
     else:
         print('There were no phone numbers or email addresses found')
   
   
 def main() -> None:
+    """
+    Finds all matches of Australia phone numbers and emails from the clipboard and copies these matches back to the clipboard.
+    """
     text: str = str(pyperclip.paste())
     matches: List[str] = matchPattern(text)
     copyToClipboard(matches)
